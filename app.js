@@ -1,19 +1,36 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mongoose = require('mongoose');
+
+//config 
+const { PORT, DB_URL } = require("./config/app.config");
+
+//routes
+const bookRoutes = require("./routes/books");
+const categoryRoutes = require("./routes/category");
+
 
 const app = express();
-
-const adminRoutes = require('./routes/admin');
-const bookRoutes = require('./routes/book');
-
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use("/admin", adminRoutes);
-app.use(bookRoutes);
+var corsOptions = {
+  origin: "*",
+};
 
-app.use((req, res, next) =>{
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+app.use(cors(corsOptions));
+
+//setup mongodb connection
+mongoose.connect(DB_URL, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+const connection = mongoose.connection;
+connection.once('open', () => {
+    console.log("Conneted to database!");
 })
 
-app.listen(3000);
+//setup routes
+app.use(bookRoutes);
+app.use(categoryRoutes);
+
+console.log(`Server running on Port ${PORT || 3000}`);
+app.listen(PORT || 3000);
