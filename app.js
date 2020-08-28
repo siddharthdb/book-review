@@ -4,7 +4,7 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 
 //config 
-const { PORT, DB_URL } = require("./config/app.config");
+const { PORT, DB_URL } = require("./config");
 
 //routes
 const bookRoutes = require("./routes/books");
